@@ -7,12 +7,11 @@
     <home-recommend-view :recommends="recommends"></home-recommend-view>
     <home-feature-view class="feature-view"></home-feature-view>
     <tab-control
+      @tabclick="tabClick"
       class="tab-control"
       :titles="['流行', '新款', '精选']"
     ></tab-control>
-    <ul>
-      <li v-for="item in 50 * [1]" :key="item.index">列表</li>
-    </ul>
+    <goods-list :goods="showGoods"></goods-list>
   </div>
 </template>
 
@@ -24,13 +23,21 @@ import HomeFeatureView from "./childrenComps/HomeFeatureView";
 import NavBar from "@/components/common/navbar/NavBar";
 import TabControl from "@/components/common/tabcontrol/TabControl";
 
-import { getHomeMultiData } from "@/network/home.js";
+import GoodsList from "@/components/content/goods/GoodsList";
+
+import { getHomeMultiData, getHomeGoodsData } from "@/network/home.js";
 export default {
   name: "Home",
   data() {
     return {
       banners: [],
       recommends: [],
+      goods: {
+        pop: { page: 0, list: [] },
+        new: { page: 0, list: [] },
+        sell: { page: 0, list: [] },
+      },
+      currentType: 'pop',
     };
   },
   components: {
@@ -39,12 +46,39 @@ export default {
     HomeRecommendView,
     HomeFeatureView,
     TabControl,
+    GoodsList,
+  },
+  methods: {
+    tabClick(index) {
+      this.currentType = Object.keys(this.goods)[index]
+    },
+
+    getHomeMultiData() {
+      getHomeMultiData().then((res) => {
+        this.banners = res.data.banner.list;
+        this.recommends = res.data.recommend.list;
+      });
+    },
+    getHomeGoodsData(type) {
+      const page = this.goods[type].page + 1;
+      getHomeGoodsData(type, page).then((res) => {
+        this.goods[type].list.push(...res.data.list);
+        this.goods[type].page += 1;
+      });
+    },
+  },
+  computed:{
+    showGoods(){
+      return this.goods[this.currentType].list
+
+    }
+
   },
   created() {
-    getHomeMultiData().then((res) => {
-      this.banners = res.data.banner.list;
-      this.recommends = res.data.recommend.list;
-    });
+    this.getHomeMultiData();
+    this.getHomeGoodsData("pop");
+    this.getHomeGoodsData("new");
+    this.getHomeGoodsData("sell");
   },
 };
 </script>
@@ -67,5 +101,6 @@ export default {
 .tab-control {
   position: sticky;
   top: 44px;
+  z-index: 9;
 }
 </style>
