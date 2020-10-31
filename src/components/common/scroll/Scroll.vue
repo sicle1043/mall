@@ -50,6 +50,9 @@ export default {
     refresh() {
       this.scroll && this.scroll.refresh();
     },
+    getScrollPosition() {
+      return this.scroll ? this.scroll.y : 0
+    },
   },
 };
 </script>

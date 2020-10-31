@@ -64,6 +64,7 @@ export default {
       isBackTopShow: false,
       tabOffsetTop: 0,
       isTabFixed: false,
+      livePosition: 0,
     };
   },
   components: {
@@ -130,6 +131,13 @@ export default {
     this.getHomeGoodsData("pop");
     this.getHomeGoodsData("new");
     this.getHomeGoodsData("sell");
+  },
+  activate() {
+    this.$refs.scroll.scrollTo(0, this.livePosition, 0);
+    this.$refs.scroll.refresh();
+  },
+  deactivate() {
+    this.livePosition = this.$refs.scroll.getScrollPosition;
   },
 };
 </script>
