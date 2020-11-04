@@ -33,12 +33,17 @@ export default {
       click: true,
       pullUpLoad: this.pullUpLoad,
     });
-    this.scroll.on("scroll", (position) => {
-      this.$emit("scroll", position);
-    });
-    this.scroll.on("pullingUp", () => {
-      this.$emit("pullingUp");
-    });
+
+    if (this.probeType === 2 || this.probeType === 3) {
+      this.scroll.on("scroll", (position) => {
+        this.$emit("scroll", position);
+      });
+    }
+    if (this.pullUpLoad) {
+      this.scroll.on("pullingUp", () => {
+        this.$emit("pullingUp");
+      });
+    }
   },
   methods: {
     scrollTo(x, y, time = 500) {
@@ -51,7 +56,7 @@ export default {
       this.scroll && this.scroll.refresh();
     },
     getScrollPosition() {
-      return this.scroll ? this.scroll.y : 0
+      return this.scroll ? this.scroll.y : 0;
     },
   },
 };
